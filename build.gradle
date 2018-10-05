@@ -11,7 +11,8 @@ allprojects {
         /* dependencies */
         springVersion = '5.1.0.RELEASE'
         lombokVersion = '1.18.2'
-        slf4jSimpleVersion = '1.7.25'
+        log4jBindingVersion = '1.7.25'
+        log4jVersion = '1.2.17'
 
         /* test dependencies */
         groovyVersion = '2.5.2'
@@ -30,7 +31,8 @@ dependencies {
     compile "org.springframework:spring-context:${springVersion}"
     compile "org.springframework:spring-beans:${springVersion}"
     compile "org.projectlombok:lombok:${lombokVersion}"
-    compile "org.slf4j:slf4j-simple:${slf4jSimpleVersion}"
+    compile "org.slf4j:slf4j-log4j12:${log4jBindingVersion}"
+    compile "log4j:log4j${log4jVersion}"
     testCompile "org.codehaus.groovy:groovy-all:${groovyVersion}"
     testCompile "org.spockframework:spock-core:${spockCoreVersion}"
 }
