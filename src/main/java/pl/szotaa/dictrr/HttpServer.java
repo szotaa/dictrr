@@ -1,30 +1,26 @@
 package pl.szotaa.dictrr;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 @Slf4j
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HttpServer {
 
-    private ServerSocket server;
+    private final ServerSocket server;
+    private final HttpRequestFactory factory;
 
     public void start(){
+        log.info("Listening for HTTP requests on port: " + server.getLocalPort());
         while (true) {
-            try (
-                    Socket socket = server.accept();
-                    InputStream inputStream = socket.getInputStream();
-                    OutputStream outputStream = socket.getOutputStream()
-            ) {
-
+            try {
+                HttpRequest request = factory.getHttpRequest(server.accept());
+                new Thread(request).start();
             } catch (IOException e) {
                 log.error(e.getMessage());
             }
