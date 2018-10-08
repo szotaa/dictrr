@@ -1,5 +1,6 @@
 package pl.szotaa.dictrr;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -11,29 +12,30 @@ import java.util.Optional;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class HttpRequestFactory {
 
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
 
-    public HttpRequest getHttpRequest (Socket socket) {
+    private final StorageService storageService;
+
+    public HttpRequest getHttpRequest (Socket socket) throws MethodNotSupportedException {
         HttpRequest result = null;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             Optional<String> methodOptional = Optional.ofNullable(reader.readLine());
             String method = methodOptional.orElseThrow(MethodNotSupportedException::new);
             String route = getRoute(method);
             if (method.contains(GET_METHOD)) {
-                result = new GetHttpRequest(route);
+                result = new GetHttpRequest(storageService, route);
             } else if (method.contains(POST_METHOD)) {
                 String body = getBody(reader);
-                result = new PostHttpRequest(route, body);
+                result = new PostHttpRequest(storageService, route, body);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
-        } catch (MethodNotSupportedException e) {
-            log.info(e.getMessage());
         }
-
         return result;
     }
 

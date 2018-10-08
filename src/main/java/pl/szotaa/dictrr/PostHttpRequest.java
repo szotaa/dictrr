@@ -7,13 +7,14 @@ public class PostHttpRequest extends HttpRequest {
 
     private final String body;
 
-    public PostHttpRequest(String route, String body) {
-        super(route);
+    public PostHttpRequest(StorageService storageService, String route, String body) {
+        super(storageService, route);
         this.body = body;
     }
 
     @Override
-    public void run() {
-
+    public HttpResponse call() throws Exception {
+        storageService.set(route, body);
+        return new HttpResponse(route + " set to: " + body);
     }
 }
