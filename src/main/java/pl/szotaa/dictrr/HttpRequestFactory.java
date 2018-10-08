@@ -42,16 +42,15 @@ public class HttpRequestFactory {
     }
 
     private String getBody(BufferedReader reader) throws IOException {
-        boolean headersEnded = false;
+        int contentLength = 0;
         String line = null;
-        while ((line = reader.readLine()) != null) {
-            if(headersEnded) {
-                return line;
-            }
-            if(line.equals("")){
-                headersEnded = true;
+        while ((line = reader.readLine()) != null && !line.equals("")) {
+            if(line.contains("content-length")) {
+                contentLength = Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
             }
         }
-        throw new IllegalStateException();
+        char[] body = new char[contentLength];
+        reader.read(body);
+        return String.valueOf(body);
     }
 }
